@@ -14,9 +14,12 @@ from fake_useragent import UserAgent
 # ""
 # ANIS="B01LY7572N"
 DATASAVE = []
-
+ErrorCount=0#错误计数
+CorrectCount=0#正确计数
+speed = 0.5#请求速度
 ThreadNum = 0
 id = 1
+
 #头文件数据
 ua = UserAgent() #自动生成头文件方法
 '''
@@ -45,7 +48,7 @@ class AmazonQuery():
         AliveNum = 0    #已结束的线程个数
         try:
             while self.page <= 4:  # 查询四页
-                time.sleep(0.3)
+                time.sleep(0.5)
                 th = threading.Thread(target=self.AmazonPageQuery, args=(ID,KEYWORD, ANIS, self.page,))
                 self.page += 1
                 TheadPool.append(th)
@@ -80,7 +83,7 @@ class AmazonQuery():
         finally:
             pass
     def AmazonPageQuery(self,ID,KEYWORD,ANIS,page): #爬取
-        global ua,DATASAVE
+        global ua,DATASAVE,ErrorCount,speed,CorrectCount
         proxy ='163.204.241.6:9999'
         proxies ={                      #代理
             'http':'http://'+proxy,
@@ -95,14 +98,25 @@ class AmazonQuery():
                     'user-agent':ua.random},params=payload)
             except:
                 print("网络被断开..重新请求")
-                time.sleep(0.3)
+                time.sleep(1)
+                ErrorCount += 1
                 continue
             l = len(r.text)
-            print(l)
             if l < 9999:
+                ErrorCount+=1
+                if ErrorCount > 30:
+                    speed+=0.1
+                    print("----------速度减慢，当前:%f" % speed)
+                    ErrorCount = 0
                 print("网络地址不正确..重新请求")
-                time.sleep(0.1)
+                time.sleep(speed)
                 continue
+            print("请求成功")
+            CorrectCount+=1
+            if CorrectCount > 90:
+                speed-=0.1
+                print("----------速度加快，当前:%f"%speed)
+                ErrorCount = 0
             tree1 = html.etree
             tree = tree1.HTML(r.text)  # 将获取的页面数据封装
             ranking = tree.xpath("//div[@data-asin=\'" + ANIS + "\']/@data-index")
@@ -174,7 +188,8 @@ class UI():
         UI.t1.grid(column=0, row=0, columnspan=2, rowspan=6)  #
         button3_text = Button(labelframe2, command=self.clearData, text='清除', width=4, font=('宋体', '12'))
         button3_text.grid(column=2, row=0)
-
+        button4_text = Button(labelframe2, command=self.plan, text='进度', width=4, font=('宋体', '12'))
+        button4_text.grid(column=2, row=2)
         button5_text = Button(labelframe2, text='导出', width=4, font=('宋体', '12'),command=self.CreateExcel)
         button5_text.grid(column=2, row=5)
         self.top.mainloop()  #  #
@@ -280,6 +295,10 @@ class UI():
     #             id = 1
     #             return
     #文本格式
+    #进度
+    def plan(self):
+        print("还剩：%d"%(id-len(DATASAVE)-1))
+        messagebox.showinfo("进度","还剩：%d"%(id-len(DATASAVE)-1))
     def set_style(name, height, bold=False):
         style = xlwt.XFStyle()  # 初始化样式
         font = xlwt.Font()  # 为样式创建字体

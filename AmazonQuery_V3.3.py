@@ -19,8 +19,8 @@ CorrectCount=0#正确计数
 speed = 0.5#请求速度
 ThreadNum = 0
 id = 1
-ErrorSpeedNum = 30 #达到这个数字减少速度
-CorrectSpeedNum =90 #达到这个数字增加速度
+ErrorSpeedNum = 90 #达到这个数字减少速度
+CorrectSpeedNum =50 #达到这个数字增加速度
 #头文件数据
 ua = UserAgent() #自动生成头文件方法
 '''
@@ -264,7 +264,7 @@ class UI():
             ThreadNum+=1
             id+=1
             if ThreadNum >= 20 :
-                time.sleep(20)
+                time.sleep(30)
                 ThreadNum = 0
         print("\n加载完毕\n")
         UI.t1.insert(1.0,'加载完毕\n')

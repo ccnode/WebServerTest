@@ -19,7 +19,8 @@ CorrectCount=0#正确计数
 speed = 0.5#请求速度
 ThreadNum = 0
 id = 1
-
+ErrorSpeedNum = 30 #达到这个数字减少速度
+CorrectSpeedNum =90 #达到这个数字增加速度
 #头文件数据
 ua = UserAgent() #自动生成头文件方法
 '''
@@ -104,7 +105,7 @@ class AmazonQuery():
             l = len(r.text)
             if l < 9999:
                 ErrorCount+=1
-                if ErrorCount > 30:
+                if ErrorCount > ErrorSpeedNum:
                     speed+=0.1
                     print("----------速度减慢，当前:%f" % speed)
                     ErrorCount = 0
@@ -113,7 +114,7 @@ class AmazonQuery():
                 continue
             print("请求成功")
             CorrectCount+=1
-            if CorrectCount > 90:
+            if CorrectCount > CorrectSpeedNum:
                 speed-=0.1
                 print("----------速度加快，当前:%f"%speed)
                 ErrorCount = 0
@@ -156,8 +157,8 @@ class UI():
         sh = self.top.winfo_screenheight()
         # 得到屏幕高度
 
-        ww = 770
-        wh = 310
+        ww = 820
+        wh = 340
         # 窗口宽高为100
         x = (sw - ww) / 2
         y = (sh - wh) / 2
@@ -169,7 +170,6 @@ class UI():
         labelframe1 = LabelFrame(labelframe, text="商品信息", width=280, height=280)
         labelframe1.grid(column=7, row=0, rowspan=1, padx=1)
         commit = Button(labelframe1, text='查询', font=('宋体', '12'), command=self.start)
-
         commit.grid(column=1, row=8, padx=0, pady=2)
         # 两个文本框
         self.t2 = Text(labelframe1, width=27, height=1)
@@ -177,9 +177,15 @@ class UI():
         self.t3 = Text(labelframe1, width=27, height=15)  #KEYWORD框
         self.t3.grid(column=1, row=5, columnspan=1, rowspan=2)
         button1_text = Button(labelframe1, command=self.clearANIS, text='清除', font=('宋体', '12'))
-        button1_text.grid(column=3, row=0, padx=10, pady=8)
+        button1_text.grid(column=3, row=0, padx=10, pady=7)
         button2_text = Button(labelframe1, command=self.clearKEYWORD, text='清除', font=('宋体', '12'))
-        button2_text.grid(column=3, row=5, padx=8, pady=8)
+        button2_text.grid(column=3, row=5, padx=8, pady=7)
+        label6 = Label(labelframe1, text="正确数").grid(column = 3,row=8, padx=0,pady=0)
+        label7 = Label(labelframe1, text="错误数").grid(column = 4,row=8, padx=0,pady=0)
+        self.t4 = Text(labelframe1, width=5, height=1)# 正确个数框
+        self.t4.grid(column=3, row=7, columnspan=1)
+        self.t5 = Text(labelframe1, width=5, height=1)  # 错误个数框
+        self.t5.grid(column=4, row=7, columnspan=1)
         label4 = Label(labelframe1, text="ANIS").grid(row=0, padx=2)
         label5 = Label(labelframe1, text="KEYWORD").grid(row=5, padx=2)
         labelframe2 = LabelFrame(labelframe, text="执行信息")
@@ -192,7 +198,9 @@ class UI():
         button4_text.grid(column=2, row=2)
         button5_text = Button(labelframe2, text='导出', width=4, font=('宋体', '12'),command=self.CreateExcel)
         button5_text.grid(column=2, row=5)
+        self.setDefaultSpeedNum()
         self.top.mainloop()  #  #
+
     # 点击关闭按钮调用
     def callback(self):
         if messagebox.askokcancel("提示", "数据将不会保存，确定退出?"):
@@ -208,10 +216,24 @@ class UI():
         self.t2.delete('1.0','end')
     def clearKEYWORD(self):
         self.t3.delete('1.0', 'end')
+    def getSpeedNum(self):
+        global CorrectSpeedNum,ErrorSpeedNum
+        correctNum = self.t4.get('0.0',END)
+        errorNum = self.t5.get('0.0', END)
+        if correctNum.strip() != "":
+            CorrectSpeedNum = int(correctNum.strip())
+        if errorNum.strip() != "":
+            ErrorSpeedNum = int(errorNum.strip())
+        print("正确个数：%d"%CorrectSpeedNum)
+        print("错误个数：%d"%ErrorSpeedNum)
+    def setDefaultSpeedNum(self):
+        self.t4.insert(1.0,"90")
+        self.t5.insert(1.0,"30")
     #查询
     def start(self):
         ANIS = self.t2.get('0.0',END)
         KEYWORD = self.t3.get('0.0',END)
+        self.getSpeedNum()
 
         self.input(ANIS,KEYWORD)
     def input(self, ANIS, KEYWORD):

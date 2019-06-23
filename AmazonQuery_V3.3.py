@@ -117,7 +117,7 @@ class AmazonQuery():
             if CorrectCount > CorrectSpeedNum:
                 speed-=0.1
                 print("----------速度加快，当前:%f"%speed)
-                ErrorCount = 0
+                CorrectCount = 0
             tree1 = html.etree
             tree = tree1.HTML(r.text)  # 将获取的页面数据封装
             ranking = tree.xpath("//div[@data-asin=\'" + ANIS + "\']/@data-index")

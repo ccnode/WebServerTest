@@ -266,56 +266,8 @@ class UI():
             if ThreadNum >= 20 :
                 time.sleep(20)
                 ThreadNum = 0
-        # l = len(KeyList)
-        # while True:
-        #     time.sleep(10)
-        #     print(AmazonQuery.id)
-        #     print(l)
-        #     if AmazonQuery.id>= l:
-        #
-        #         messagebox.INFO('提示','查询完成！')
-        #         break
-        '''
-            阻塞测试
-        '''
-        # KeyList = KEYWORD.split("\n")
-        # if len(KeyList) > 20:
-        #     for Key in KeyList:
-        #         Amazon = AmazonQuery()
-        #         th = threading.Thread(target=Amazon.createThead, args=(Key.strip(), ANIS))
-        #         threadPool.append(th)
-        #         ThreadNum+=1
-        #         if ThreadNum >=20:
-        #             for i in threadPool:
-        #                 i.start()
-        #             time.sleep(5)
-        #             for i in threadPool:
-        #                 i.join()            #等待线程完成
-        #             ThreadNum = 0
-        #         threadPool = []
-        # else:
-        #     for Key in KeyList:
-        #         Amazon = AmazonQuery()
-        #         th = threading.Thread(target=Amazon.createThead, args=(Key.strip(), ANIS))
-        #         threadPool.append(th)
-        #         for i in threadPool:
-        #             th.start()
-        #         for i in threadPool:
-        #             th.join()
-
-
         print("\n加载完毕\n")
         UI.t1.insert(1.0,'加载完毕\n')
-        # UI.t1.insert('insert', '查询结束')
-    # def Listening(self,KeyList):
-    #     global id
-    #     l = len(KeyList)
-    #     while True:
-    #         time.sleep(10)
-    #         if id >= l:
-    #             UI.t1.insert(1.0,'查询完成\n')
-    #             id = 1
-    #             return
     #文本格式
     #进度
     def plan(self):
@@ -328,11 +280,6 @@ class UI():
         font.bold = bold
         font.color_index = 4
         font.height = height
-        # borders= xlwt.Borders()
-        # borders.left= 6
-        # borders.right= 6
-        # borders.top= 6
-        # borders.bottom= 6
         style.font = font
         # style.borders = borders
         return style
